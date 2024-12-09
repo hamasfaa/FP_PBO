@@ -2,7 +2,7 @@ package main;
 
 //import brick.Game3Panel;
 //import pacman.Game1Panel;
-import snake.Game1Panel;
+//import snake.Game1Panel;
 
 import javax.swing.*;
 
@@ -29,12 +29,12 @@ public GameWindow() {
     JMenuItem exitGame = new JMenuItem("Exit");
     JMenuItem about = new JMenuItem("About");
 
-    game1.addActionListener(e -> {
-        frame.getContentPane().removeAll();
-        frame.add(new Game1Panel());
-        frame.revalidate();
-        frame.repaint();
-    });
+//    game1.addActionListener(e -> {
+//        frame.getContentPane().removeAll();
+//        frame.add(new Game1Panel());
+//        frame.revalidate();
+//        frame.repaint();
+//    });
 
 //        game2.addActionListener(e -> {
 //            frame.getContentPane().removeAll();
