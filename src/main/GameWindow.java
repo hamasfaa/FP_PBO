@@ -10,9 +10,9 @@ public class GameWindow {
         private JFrame frame;
 public GameWindow() {
     JFrame frame = new JFrame("Game Selection Menu");
-    GamePanel gamePanel = new GamePanel(1); //Defaultnya 1, nanti bikin window default
-
-    frame.add(gamePanel);
+//    GamePanel gamePanel = new GamePanel(1); //Defaultnya 1, nanti bikin window default
+//
+//    frame.add(gamePanel);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setSize(800, 600);
     frame.setLocationRelativeTo(null);

@@ -1,11 +1,12 @@
 package MySnake;
 
+import inputs.KeyboardInputs;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 public class Game3Panel extends JFrame {
@@ -16,6 +17,8 @@ public class Game3Panel extends JFrame {
     private Point food;
     private String direction = "RIGHT";
     private boolean gameOver = false;
+    private Timer timer;
+    private KeyboardInputs input;
 
     public Game3Panel() {
         setTitle("MySnake");
@@ -23,80 +26,80 @@ public class Game3Panel extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
+        input = KeyboardInputs.getInstance();
+        addKeyListener(input);
+        setFocusable(true);
+
         snake.add(new Point(5, 5));
         deployFood();
 
-        Timer timer = new Timer(100, new ActionListener() {
+        timer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!gameOver) {
                     playerMovement();
                     collisionHandling();
                     repaint();
+                } else if (input.isKeyPressed(KeyEvent.VK_R)) {
+                    restartGame();
                 }
             }
         });
         timer.start();
 
-        addKeyListener(new KeyListener() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (!gameOver) {
-                    switch (e.getKeyCode()) {
-                        case KeyEvent.VK_UP:
-                            if (!direction.equals("DOWN")) direction = "UP";
-                            break;
-                        case KeyEvent.VK_DOWN:
-                            if (!direction.equals("UP")) direction = "DOWN";
-                            break;
-                        case KeyEvent.VK_LEFT:
-                            if (!direction.equals("RIGHT")) direction = "LEFT";
-                            break;
-                        case KeyEvent.VK_RIGHT:
-                            if (!direction.equals("LEFT")) direction = "RIGHT";
-                            break;
-                    }
-                } else if (e.getKeyCode() == KeyEvent.VK_R) {
-                    restartGame();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {}
-
-            @Override
-            public void keyTyped(KeyEvent e) {}
-        });
-
         add(new GamePanel());
     }
 
     private void playerMovement() {
-        Point body = snake.get(0);
-        Point newHead = switch (direction) {
-            case "UP" -> new Point(body.x, body.y - 1);
-            case "DOWN" -> new Point(body.x, body.y + 1);
-            case "LEFT" -> new Point(body.x - 1, body.y);
-            default -> new Point(body.x + 1, body.y);
-        };
+        if (input.isKeyPressed(KeyEvent.VK_UP) && !direction.equals("DOWN")) {
+            direction = "UP";
+        }
+        if (input.isKeyPressed(KeyEvent.VK_DOWN) && !direction.equals("UP")) {
+            direction = "DOWN";
+        }
+        if (input.isKeyPressed(KeyEvent.VK_LEFT) && !direction.equals("RIGHT")) {
+            direction = "LEFT";
+        }
+        if (input.isKeyPressed(KeyEvent.VK_RIGHT) && !direction.equals("LEFT")) {
+            direction = "RIGHT";
+        }
 
-        if (newHead.equals(food)) {
-            snake.add(0, newHead);
-            deployFood();
-        } else {
-            snake.add(0, newHead);
-            snake.remove(snake.size() - 1);
+        Point head = snake.get(0);
+        Point newHead = null;
+        switch (direction) {
+            case "UP":
+                newHead = new Point(head.x, head.y - 1);
+                break;
+            case "DOWN":
+                newHead = new Point(head.x, head.y + 1);
+                break;
+            case "LEFT":
+                newHead = new Point(head.x - 1, head.y);
+                break;
+            case "RIGHT":
+                newHead = new Point(head.x + 1, head.y);
+                break;
+        }
+
+        if (newHead != null) {
+            if (newHead.equals(food)) {
+                snake.add(0, newHead);
+                deployFood();
+            } else {
+                snake.add(0, newHead);
+                snake.remove(snake.size() - 1);
+            }
         }
     }
 
     private void collisionHandling() {
-        Point body = snake.get(0);
+        Point head = snake.get(0);
 
-        if (body.x < 0 || body.x >= WIDTH / TILE_SIZE || body.y < 0 || body.y >= HEIGHT / TILE_SIZE) {
+        if (head.x < 0 || head.x >= WIDTH / TILE_SIZE || head.y < 0 || head.y >= HEIGHT / TILE_SIZE) {
             gameOver = true;
         }
         for (int i = 1; i < snake.size(); i++) {
-            if (body.equals(snake.get(i))) {
+            if (head.equals(snake.get(i))) {
                 gameOver = true;
                 break;
             }
@@ -106,12 +109,12 @@ public class Game3Panel extends JFrame {
     private void deployFood() {
         int gridWidth = WIDTH / TILE_SIZE;
         int gridHeight = HEIGHT / TILE_SIZE;
-    
+
         int x = (int) (Math.random() * gridWidth);
         int y = (int) (Math.random() * gridHeight);
-    
+
         food = new Point(x, y);
-    
+
         if (snake.contains(food)) {
             deployFood();
         }
@@ -124,33 +127,34 @@ public class Game3Panel extends JFrame {
         gameOver = false;
         deployFood();
         repaint();
+        System.out.println("Game restarted!");
     }
 
     private class GamePanel extends JPanel {
         public GamePanel() {
             setBackground(Color.BLACK);
         }
-    
+
         @Override
         protected void paintComponent(Graphics canvas) {
             super.paintComponent(canvas);
-    
+
             canvas.setColor(Color.GREEN);
             for (Point p : snake) {
                 canvas.fillRect(p.x * TILE_SIZE, p.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
-    
+
             canvas.setColor(Color.RED);
             canvas.fillRect(food.x * TILE_SIZE, food.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-    
+
             if (gameOver) {
                 canvas.setColor(Color.WHITE);
                 FontMetrics metrics = canvas.getFontMetrics(canvas.getFont());
                 String gameOverText = "Game Over! Press R to restart.";
-                
+
                 int x = (WIDTH - metrics.stringWidth(gameOverText)) / 2;
                 int y = (HEIGHT - metrics.getHeight()) / 2 + metrics.getAscent();
-                
+
                 canvas.drawString(gameOverText, x, y);
             }
         }

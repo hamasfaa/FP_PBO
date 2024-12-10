@@ -1,5 +1,7 @@
 package Pong;
 
+import inputs.KeyboardInputs;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Graphics;
@@ -20,22 +22,25 @@ public class Game1Panel {
     }
 }
 
-class GamePanel extends JPanel implements Runnable, KeyListener {
+class GamePanel extends JPanel implements Runnable {
     private Thread gameThread;
     private boolean running;
     private Paddle paddle1, paddle2;
     private Ball ball;
     private int score1, score2;
+    private KeyboardInputs input;
 
     public GamePanel() {
         setFocusable(true);
-        addKeyListener(this);
+        requestFocus();
         setBackground(Color.BLACK);
         paddle1 = new Paddle(10, 250, KeyEvent.VK_W, KeyEvent.VK_S);
         paddle2 = new Paddle(670, 250, KeyEvent.VK_UP, KeyEvent.VK_DOWN);
         ball = new Ball(350, 300);
         score1 = 0;
         score2 = 0;
+        input = KeyboardInputs.getInstance();
+        addKeyListener(input);
         start();
     }
 
@@ -63,8 +68,9 @@ class GamePanel extends JPanel implements Runnable, KeyListener {
     }
 
     public void tick() {
-        paddle1.tick();
-        paddle2.tick();
+        // Update paddle movement based on input
+        paddle1.update(input);
+        paddle2.update(input);
         ball.tick(paddle1, paddle2);
 
         if(ball.getX() < 0){
@@ -93,19 +99,6 @@ class GamePanel extends JPanel implements Runnable, KeyListener {
         g.drawString(String.valueOf(score1), 300, 50);
         g.drawString(String.valueOf(score2), 400, 50);
     }
-
-    // KeyListener methods
-    public void keyPressed(KeyEvent e) {
-        paddle1.keyPressed(e);
-        paddle2.keyPressed(e);
-    }
-
-    public void keyReleased(KeyEvent e) {
-        paddle1.keyReleased(e);
-        paddle2.keyReleased(e);
-    }
-
-    public void keyTyped(KeyEvent e) {}
 }
 
 class Paddle {
@@ -122,7 +115,13 @@ class Paddle {
         this.downKey = downKey;
     }
 
-    public void tick(){
+    public void update(KeyboardInputs input){
+        up = input.isKeyPressed(upKey);
+        down = input.isKeyPressed(downKey);
+        tick();
+    }
+
+    private void tick(){
         if(up && y > 0){
             y -= speed;
         }
@@ -134,24 +133,6 @@ class Paddle {
     public void render(Graphics g){
         g.setColor(Color.WHITE);
         g.fillRect(x, y, width, height);
-    }
-
-    public void keyPressed(KeyEvent e){
-        if(e.getKeyCode() == upKey){
-            up = true;
-        }
-        if(e.getKeyCode() == downKey){
-            down = true;
-        }
-    }
-
-    public void keyReleased(KeyEvent e){
-        if(e.getKeyCode() == upKey){
-            up = false;
-        }
-        if(e.getKeyCode() == downKey){
-            down = false;
-        }
     }
 
     public int getX(){

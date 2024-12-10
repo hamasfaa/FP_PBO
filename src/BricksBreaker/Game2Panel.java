@@ -1,14 +1,16 @@
+// File: Game2Panel.java
 package BricksBreaker;
+
+import inputs.KeyboardInputs;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.Random;
 
-public class Game2Panel extends JPanel implements ActionListener, KeyListener {
+public class Game2Panel extends JPanel implements ActionListener {
     private int ballX, ballY, ballXDir, ballYDir;
     private int paddleX = 310;
     private int[][] bricks = new int[3][7];
@@ -16,11 +18,13 @@ public class Game2Panel extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private int score = 0;
     private Random random = new Random();
+    private KeyboardInputs input;
 
     public Game2Panel() {
-        addKeyListener(this);
         setFocusable(true);
-        setFocusTraversalKeysEnabled(false);
+        setBackground(Color.BLACK);
+        input = KeyboardInputs.getInstance();
+        addKeyListener(input);
         timer = new Timer(5, this);
         timer.start();
         restartGame();
@@ -41,9 +45,9 @@ public class Game2Panel extends JPanel implements ActionListener, KeyListener {
         ballYDir = 2;
     }
 
-    public void paint(Graphics g) {
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, 700, 600);
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
 
         g.setColor(Color.RED);
         for (int i = 0; i < bricks.length; i++) {
@@ -93,7 +97,7 @@ public class Game2Panel extends JPanel implements ActionListener, KeyListener {
         randomizeBallPosition();
         paddleX = 310;
         score = 0;
-        play = false;
+        play = true;
         initializeBricks();
         repaint();
     }
@@ -101,13 +105,24 @@ public class Game2Panel extends JPanel implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (play) {
+            // Handle paddle movement based on input
+            if (input.isKeyPressed(KeyEvent.VK_LEFT) && paddleX > 0) {
+                paddleX -= 5;
+            }
+            if (input.isKeyPressed(KeyEvent.VK_RIGHT) && paddleX < 600) {
+                paddleX += 5;
+            }
+
             ballX += ballXDir;
             ballY += ballYDir;
 
             if (ballX < 0 || ballX > 680) ballXDir = -ballXDir;
             if (ballY < 0) ballYDir = -ballYDir;
 
-            if (new Rectangle(ballX, ballY, 20, 20).intersects(new Rectangle(paddleX, 550, 100, 10))) {
+            Rectangle ballRect = new Rectangle(ballX, ballY, 20, 20);
+            Rectangle paddleRect = new Rectangle(paddleX, 550, 100, 10);
+
+            if (ballRect.intersects(paddleRect)) {
                 ballYDir = -ballYDir;
             }
 
@@ -118,7 +133,7 @@ public class Game2Panel extends JPanel implements ActionListener, KeyListener {
                         int brickY = i * 30 + 50;
                         Rectangle brickRect = new Rectangle(brickX, brickY, 80, 20);
 
-                        if (new Rectangle(ballX, ballY, 20, 20).intersects(brickRect)) {
+                        if (ballRect.intersects(brickRect)) {
                             bricks[i][j] = 0;
                             ballYDir = -ballYDir;
                             score += 10;
@@ -132,32 +147,14 @@ public class Game2Panel extends JPanel implements ActionListener, KeyListener {
                 play = false;
             }
         }
+
+        // Handle game restart
+        if (input.isKeyPressed(KeyEvent.VK_SPACE) && !play) {
+            restartGame();
+        }
+
         repaint();
     }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        int paddleSpeed = 30;
-
-        if (e.getKeyCode() == KeyEvent.VK_LEFT && paddleX > 0) {
-            paddleX -= paddleSpeed;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT && paddleX < 600) {
-            paddleX += paddleSpeed;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            if (!play) {
-                restartGame();
-                play = true;
-            }
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {}
-
-    @Override
-    public void keyTyped(KeyEvent e) {}
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Bricks Breaker");
