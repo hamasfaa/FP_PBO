@@ -1,28 +1,11 @@
 package Pong;
 
 import inputs.KeyboardInputs;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
-
-public class Game1Panel {
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Ping Pong Game");
-        GamePanel gamePanel = new GamePanel();
-        frame.setBounds(10, 10, 700, 600);
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(gamePanel);
-        frame.setVisible(true);
-    }
-}
-
-class GamePanel extends JPanel implements Runnable {
+public class Game1Panel extends JPanel implements Runnable {
     private Thread gameThread;
     private boolean running;
     private Paddle paddle1, paddle2;
@@ -30,17 +13,18 @@ class GamePanel extends JPanel implements Runnable {
     private int score1, score2;
     private KeyboardInputs input;
 
-    public GamePanel() {
+    public Game1Panel() {
         setFocusable(true);
-        requestFocus();
         setBackground(Color.BLACK);
+        setPreferredSize(new Dimension(700, 600));
+        input = KeyboardInputs.getInstance();
+        addKeyListener(input);
+        requestFocusInWindow(); // Ensure the panel gets focus
         paddle1 = new Paddle(10, 250, KeyEvent.VK_W, KeyEvent.VK_S);
         paddle2 = new Paddle(670, 250, KeyEvent.VK_UP, KeyEvent.VK_DOWN);
         ball = new Ball(350, 300);
         score1 = 0;
         score2 = 0;
-        input = KeyboardInputs.getInstance();
-        addKeyListener(input);
         start();
     }
 
@@ -68,7 +52,6 @@ class GamePanel extends JPanel implements Runnable {
     }
 
     public void tick() {
-        // Update paddle movement based on input
         paddle1.update(input);
         paddle2.update(input);
         ball.tick(paddle1, paddle2);

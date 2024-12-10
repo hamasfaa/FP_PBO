@@ -1,74 +1,83 @@
 package main;
 
-//import brick.Game3Panel;
-//import pacman.Game1Panel;
-//import snake.Game1Panel;
-
+import Pong.Game1Panel;
+import BricksBreaker.Game2Panel;
+import MySnake.Game3Panel;
 import javax.swing.*;
 
 public class GameWindow {
-        private JFrame frame;
-public GameWindow() {
-    JFrame frame = new JFrame("Game Selection Menu");
-//    GamePanel gamePanel = new GamePanel(1); //Defaultnya 1, nanti bikin window default
-//
-//    frame.add(gamePanel);
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setSize(800, 600);
-    frame.setLocationRelativeTo(null);
+    private JFrame frame;
 
-    JMenuBar menuBar = new JMenuBar();
+    public GameWindow() {
+        frame = new JFrame("Game Selection Menu");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
 
-    JMenu gameMenu = new JMenu("Games");
-    JMenu helpMenu = new JMenu("Help");
+        JMenuBar menuBar = new JMenuBar();
 
-    JMenuItem game1 = new JMenuItem("Game 1: ????");
-    JMenuItem game2 = new JMenuItem("Game 2: ????");
-    JMenuItem game3 = new JMenuItem("Game 3: ????");
+        JMenu gameMenu = new JMenu("Games");
+        JMenu helpMenu = new JMenu("Help");
 
-    JMenuItem exitGame = new JMenuItem("Exit");
-    JMenuItem about = new JMenuItem("About");
+        JMenuItem game1 = new JMenuItem("Game 1: Pong");
+        JMenuItem game2 = new JMenuItem("Game 2: Bricks Breaker");
+        JMenuItem game3 = new JMenuItem("Game 3: Snake");
 
-//    game1.addActionListener(e -> {
-//        frame.getContentPane().removeAll();
-//        frame.add(new Game1Panel());
-//        frame.revalidate();
-//        frame.repaint();
-//    });
+        JMenuItem exitGame = new JMenuItem("Exit");
+        JMenuItem about = new JMenuItem("About");
 
-//        game2.addActionListener(e -> {
-//            frame.getContentPane().removeAll();
-//            frame.add(new Game2Panel());
-//            frame.revalidate();
-//            frame.repaint();
-//        });
-//
-//        game3.addActionListener(e -> {
-//            frame.getContentPane().removeAll();
-//            frame.add(new Game3Panel());
-//            frame.revalidate();
-//            frame.repaint();
-//        });
+        game1.addActionListener(e -> {
+            frame.getContentPane().removeAll();
+            Game1Panel gamePanel = new Game1Panel();
+            frame.add(gamePanel);
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.revalidate();
+            frame.repaint();
+            gamePanel.requestFocusInWindow();
+        });
 
-    exitGame.addActionListener(e -> System.exit(0));
+        game2.addActionListener(e -> {
+            frame.getContentPane().removeAll();
+            Game2Panel gamePanel = new Game2Panel();
+            frame.add(gamePanel);
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.revalidate();
+            frame.repaint();
+            gamePanel.requestFocusInWindow();
+        });
 
-    about.addActionListener(e -> JOptionPane.showMessageDialog(frame,
-            "Game Selection Application\nChoose from 3 different games!",
-            "About", JOptionPane.INFORMATION_MESSAGE));
+        game3.addActionListener(e -> {
+            frame.getContentPane().removeAll();
+            Game3Panel gamePanel = new Game3Panel();
+            frame.add(gamePanel);
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.revalidate();
+            frame.repaint();
+            gamePanel.requestFocusInWindow();
+        });
 
-    gameMenu.add(game1);
-    gameMenu.add(game2);
-    gameMenu.add(game3);
-    gameMenu.addSeparator();
-    gameMenu.add(exitGame);
+        exitGame.addActionListener(e -> System.exit(0));
 
-    helpMenu.add(about);
+        about.addActionListener(e -> JOptionPane.showMessageDialog(frame,
+                "Hamasah Fatiy Dakhilullah(5025231139)\nRafael Asa Edginius Krisdina(5025231143)\nAmadeo Yesa(5025231160)\nGame Selection Application\nChoose from 3 different games!",
+                "About", JOptionPane.INFORMATION_MESSAGE));
 
-    menuBar.add(gameMenu);
-    menuBar.add(helpMenu);
+        gameMenu.add(game1);
+        gameMenu.add(game2);
+        gameMenu.add(game3);
+        gameMenu.addSeparator();
+        gameMenu.add(exitGame);
 
-    frame.setJMenuBar(menuBar);
+        helpMenu.add(about);
 
-    frame.setVisible(true);
-}
+        menuBar.add(gameMenu);
+        menuBar.add(helpMenu);
+
+        frame.setJMenuBar(menuBar);
+
+        frame.setVisible(true);
+    }
 }

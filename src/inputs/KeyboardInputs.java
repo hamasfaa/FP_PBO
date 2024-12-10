@@ -32,7 +32,6 @@ public class KeyboardInputs implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        // Not used
     }
 
     public boolean isKeyPressed(int keyCode) {

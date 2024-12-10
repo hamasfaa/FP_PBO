@@ -1,13 +1,9 @@
-// File: Game2Panel.java
 package BricksBreaker;
 
 import inputs.KeyboardInputs;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.Random;
 
 public class Game2Panel extends JPanel implements ActionListener {
@@ -23,8 +19,10 @@ public class Game2Panel extends JPanel implements ActionListener {
     public Game2Panel() {
         setFocusable(true);
         setBackground(Color.BLACK);
+        setPreferredSize(new Dimension(700, 600));
         input = KeyboardInputs.getInstance();
         addKeyListener(input);
+        requestFocusInWindow();
         timer = new Timer(5, this);
         timer.start();
         restartGame();
@@ -105,7 +103,6 @@ public class Game2Panel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (play) {
-            // Handle paddle movement based on input
             if (input.isKeyPressed(KeyEvent.VK_LEFT) && paddleX > 0) {
                 paddleX -= 5;
             }
@@ -148,7 +145,6 @@ public class Game2Panel extends JPanel implements ActionListener {
             }
         }
 
-        // Handle game restart
         if (input.isKeyPressed(KeyEvent.VK_SPACE) && !play) {
             restartGame();
         }

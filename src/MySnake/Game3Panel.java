@@ -1,15 +1,12 @@
 package MySnake;
 
 import inputs.KeyboardInputs;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 
-public class Game3Panel extends JFrame {
+public class Game3Panel extends JPanel {
     private static final int TILE_SIZE = 20;
     private static final int WIDTH = 600;
     private static final int HEIGHT = 400;
@@ -21,33 +18,27 @@ public class Game3Panel extends JFrame {
     private KeyboardInputs input;
 
     public Game3Panel() {
-        setTitle("MySnake");
-        setSize(WIDTH, HEIGHT);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setBackground(Color.BLACK);
+        setFocusable(true);
+        requestFocusInWindow();
 
         input = KeyboardInputs.getInstance();
         addKeyListener(input);
-        setFocusable(true);
 
         snake.add(new Point(5, 5));
         deployFood();
 
-        timer = new Timer(100, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!gameOver) {
-                    playerMovement();
-                    collisionHandling();
-                    repaint();
-                } else if (input.isKeyPressed(KeyEvent.VK_R)) {
-                    restartGame();
-                }
+        timer = new Timer(100, e -> {
+            if (!gameOver) {
+                playerMovement();
+                collisionHandling();
+                repaint();
+            } else if (input.isKeyPressed(KeyEvent.VK_R)) {
+                restartGame();
             }
         });
         timer.start();
-
-        add(new GamePanel());
     }
 
     private void playerMovement() {
@@ -130,40 +121,27 @@ public class Game3Panel extends JFrame {
         System.out.println("Game restarted!");
     }
 
-    private class GamePanel extends JPanel {
-        public GamePanel() {
-            setBackground(Color.BLACK);
+    @Override
+    protected void paintComponent(Graphics canvas) {
+        super.paintComponent(canvas);
+
+        canvas.setColor(Color.GREEN);
+        for (Point p : snake) {
+            canvas.fillRect(p.x * TILE_SIZE, p.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         }
 
-        @Override
-        protected void paintComponent(Graphics canvas) {
-            super.paintComponent(canvas);
+        canvas.setColor(Color.RED);
+        canvas.fillRect(food.x * TILE_SIZE, food.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
-            canvas.setColor(Color.GREEN);
-            for (Point p : snake) {
-                canvas.fillRect(p.x * TILE_SIZE, p.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            }
+        if (gameOver) {
+            canvas.setColor(Color.WHITE);
+            FontMetrics metrics = canvas.getFontMetrics(canvas.getFont());
+            String gameOverText = "Game Over! Press R to restart.";
 
-            canvas.setColor(Color.RED);
-            canvas.fillRect(food.x * TILE_SIZE, food.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            int x = (getWidth() - metrics.stringWidth(gameOverText)) / 2;
+            int y = (getHeight() - metrics.getHeight()) / 2 + metrics.getAscent();
 
-            if (gameOver) {
-                canvas.setColor(Color.WHITE);
-                FontMetrics metrics = canvas.getFontMetrics(canvas.getFont());
-                String gameOverText = "Game Over! Press R to restart.";
-
-                int x = (WIDTH - metrics.stringWidth(gameOverText)) / 2;
-                int y = (HEIGHT - metrics.getHeight()) / 2 + metrics.getAscent();
-
-                canvas.drawString(gameOverText, x, y);
-            }
+            canvas.drawString(gameOverText, x, y);
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Game3Panel game = new Game3Panel();
-            game.setVisible(true);
-        });
     }
 }
